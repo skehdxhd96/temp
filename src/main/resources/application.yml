@@ -36,3 +36,8 @@ logging:
         type:
           descriptor:
             sql: trace
+
+app:
+  oauth2:
+    authorizedRedirectUris:
+      - redirectUrl

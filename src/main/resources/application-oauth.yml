@@ -4,11 +4,11 @@ spring:
       client:
         registration:
           naver:
-            client-id: HS9ffEi_MQWPEq5MWvmL # 숨겨야함
-            client-secret: K2PfTErz4W # 숨겨야함
+            client-id: HS9ffEi_MQWPEq5MWvmL
+            client-secret: K2PfTErz4W
             redirect-uri: "http://localhost:8080/login/oauth2/code/naver" # "{baseUrl}/{action}/oauth2/code/{registrationId}"
             authorization-grant-type: authorization_code
-            scope: name, email, gender, age, birthday, birthyear, mobile
+            scope: name, nickname, email, gender, age, birthday, birthyear, mobile
             client-name: Naver
         provider:
           naver:
