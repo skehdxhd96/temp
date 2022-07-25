@@ -1,5 +1,7 @@
 package com.example.loginservice.security;
 
+import com.example.loginservice.domain.filter.TokenAuthenticationFilter;
+import com.example.loginservice.domain.jwt.TokenProvider;
 import com.example.loginservice.oauth2.entrypoint.RestAuthenticationEntryPoint;
 import com.example.loginservice.oauth2.handler.OAuth2AuthenticationFailureHandler;
 import com.example.loginservice.oauth2.handler.OAuth2AuthenticationSuccessHandler;
@@ -10,18 +12,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final CorsConfigurationSource corsConfigurationSource;
     private final CustomOAuth2UserService customOAuth2UserService;
-    private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
@@ -31,12 +37,34 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    @Bean
+    public TokenAuthenticationFilter tokenAuthenticationFilter() {
+        return new TokenAuthenticationFilter();
+    }
+
+    @Bean
+    public HttpCookieOAuth2AuthorizationRequestRepository cookieAuthorizationRequestRepository() {
+        return new HttpCookieOAuth2AuthorizationRequestRepository();
+    }
+
+    /**
+     * TODO:
+     * https://nid.naver.com/oauth2.0/token?grant_type=authorization_code&client_id=HS9ffEi_MQWPEq5MWvmL&client_secret=K2PfTErz4W&code=uj9eoRuntnomtbyg7Z&state=9kgsGTfH4j7IyAkg
+     * 자동화 안되고 하나하나 url 다 쳐야함
+     * jwt는 아얘 빠져있음
+     *
+     */
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .headers().frameOptions().disable()
                 .and()
                 .cors()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .csrf().disable()
                 .formLogin().disable()
@@ -61,16 +89,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .oauth2Login()
                 .authorizationEndpoint()
-                .baseUri()
-                .authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository)
+                .baseUri("https://nid.naver.com/oauth2.0/authorize")
+                .authorizationRequestRepository(cookieAuthorizationRequestRepository())
                 .and()
                 .redirectionEndpoint()
-                .baseUri()
+                .baseUri("http://localhost:8080/login/oauth2/code/naver")
                 .and()
                 .userInfoEndpoint()
                 .userService(customOAuth2UserService)
                 .and()
                 .successHandler(oAuth2AuthenticationSuccessHandler)
                 .failureHandler(oAuth2AuthenticationFailureHandler);
+
+        http.addFilterBefore(tokenAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 }

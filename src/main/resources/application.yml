@@ -40,4 +40,4 @@ logging:
 app:
   oauth2:
     authorizedRedirectUris:
-      - redirectUrl
+      - http://localhost:8080/login/oauth2/code/naver

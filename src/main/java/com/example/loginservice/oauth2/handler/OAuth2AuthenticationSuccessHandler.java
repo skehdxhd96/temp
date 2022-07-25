@@ -1,6 +1,8 @@
 package com.example.loginservice.oauth2.handler;
 
 import com.example.loginservice.domain.jwt.TokenProvider;
+import com.example.loginservice.exception.AuthException;
+import com.example.loginservice.exception.ErrorCode;
 import com.example.loginservice.oauth2.repository.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.example.loginservice.security.AppProperties;
 import com.example.loginservice.util.CookieUtils;
@@ -12,7 +14,6 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.security.auth.message.AuthException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
