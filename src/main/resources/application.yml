@@ -6,7 +6,7 @@ spring:
     password:
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
     properties:
       hibernate:
         format_sql: true
@@ -40,4 +40,4 @@ logging:
 app:
   oauth2:
     authorizedRedirectUris:
-      - http://localhost:8080/login/oauth2/code/naver
+      - http://localhost:8080/home
