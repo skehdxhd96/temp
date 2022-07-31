@@ -5,13 +5,11 @@ import java.util.Map;
 public class NaverOauth2UserInfo extends OAuth2UserInfo{
 
     public NaverOauth2UserInfo(Map<String, Object> attributes) {
-        super(attributes);
+        super((Map<String, Object>) attributes.get("response"));
     }
 
     @Override
-    public String getId() {
-        return (String) attributes.get("id");
-    }
+    public String getId() { return (String) attributes.get("id");}
 
     @Override
     public String getName() {

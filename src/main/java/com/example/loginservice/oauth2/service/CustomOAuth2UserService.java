@@ -4,6 +4,7 @@ import com.example.loginservice.domain.AuthProvider;
 import com.example.loginservice.domain.Role;
 import com.example.loginservice.domain.User;
 import com.example.loginservice.domain.dto.UserPrincipal;
+import com.example.loginservice.oauth2.dto.NaverOauth2UserInfo;
 import com.example.loginservice.oauth2.dto.OAuth2UserInfo;
 import com.example.loginservice.oauth2.dto.OAuth2UserInfoFactory;
 import com.example.loginservice.oauth2.exception.OAuth2AuthenticationProcessingException;
@@ -18,8 +19,14 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Locale;
 import java.util.Optional;
-
+/**
+ * Spring OAuth2 에서 제공하는 OAuth2User 을 가공하여 OAuth2UserInfo 로 만들고
+ * OAuth2UserInfo 에 Email 이 있는 지 검사와, A 라는 플랫폼으로 가입이 되어있는 데, B 플랫폼으로 가입 하려는 경우 검사를 진행
+ * 이미 존재하는 계정에 경우에는 Update 를 진행하고,
+ * 없는 경우에는 새로 Insert 하며, UserPrincipal 을 리턴한다
+ */
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -43,6 +50,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(
                 userRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
+
         if (StringUtils.isEmpty(oAuth2UserInfo.getEmail())) {
             throw new OAuth2AuthenticationProcessingException("OAuth2 provider에 이메일이 없습니다.");
         }
@@ -70,7 +78,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .email(oAuth2UserInfo.getEmail())
                 .name(oAuth2UserInfo.getName())
                 .nickname(oAuth2UserInfo.getNickname())
-                .provider(AuthProvider.valueOf(provider.toUpperCase()))
+                .provider(AuthProvider.valueOf(provider.toLowerCase()))
                 .providerId(oAuth2UserInfo.getId())
                 .role(Role.CONSUMER)
                 .build();

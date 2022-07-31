@@ -20,6 +20,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
+/**
+ * 보안 설정
+ */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -90,9 +93,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizationEndpoint()
                 .baseUri("/api/oauth2/authorize") // => 이렇게 보내면 provider에서 제공하는 authorization_uri 로 리다이렉트 시켜준다.
                 .authorizationRequestRepository(cookieAuthorizationRequestRepository())
-                .and()
-                .redirectionEndpoint()
-                .baseUri("/api/oauth2/callback/*")
+//                .and()
+//                .redirectionEndpoint()
+//                .baseUri("/api/oauth2/callback/*")
                 .and()
                 .userInfoEndpoint()
                 .userService(customOAuth2UserService)

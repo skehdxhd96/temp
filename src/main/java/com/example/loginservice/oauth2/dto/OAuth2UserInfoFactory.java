@@ -2,9 +2,11 @@ package com.example.loginservice.oauth2.dto;
 
 import com.example.loginservice.domain.AuthProvider;
 import com.example.loginservice.oauth2.exception.OAuth2AuthenticationProcessingException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
+@Slf4j
 public class OAuth2UserInfoFactory {
 
     private OAuth2UserInfoFactory() {
@@ -12,6 +14,9 @@ public class OAuth2UserInfoFactory {
     }
 
     public static OAuth2UserInfo getOAuth2UserInfo(String registrationId, Map<String, Object> attributes) {
+
+        log.info("OAuth2UserInfoFactory Start");
+
         if (registrationId.equalsIgnoreCase(AuthProvider.naver.toString())) {
             return new NaverOauth2UserInfo(attributes);
         }
